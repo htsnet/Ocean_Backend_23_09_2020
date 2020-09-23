@@ -30,12 +30,15 @@ const mongodb = require('mongodb');
     // Endpoints de envio de mensagens
     // CRUD -> Create, Read (Read All e Read Single), Update and Delete
     // CRUD -> Criar, Ler (Ler tudo e ler individualmente), atualizar e remover
+    const db = await client.db('ocean_mongodb');
 
-    const mensagens = [];
-
+    const mensagens = await db.collection('mensagens');
+    
     // Read All
-    app.get('/mensagens', (req, res) => {
-        res.json(mensagens.filter(Boolean));
+    app.get('/mensagens', async (req, res) => {
+        const findResult = await mensagens.find({}).toArray();
+        //console.info(findResult.length());
+        res.json(findResult);
     });
 
     // Create
