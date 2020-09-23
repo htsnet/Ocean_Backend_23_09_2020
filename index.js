@@ -1,43 +1,58 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongodb = require('mongodb');
+//const connectionString = require(conexao.js);
 
-const app = express();
-const port = process.env.PORT || 3000;
+//para fazer um bloco assíncrono e já executando este bloco (ao invés de criar uma função e chamar em seguida)
+(async () => {
 
-const jsonParser = bodyParser.json();
-app.use(jsonParser);
+    console.info("Aguardando conexão com o banco de dados");
 
-app.get('/', (req, res) => {
-    res.send('Hello world com MongoDB!');
-});
+    const sourceFile = require('./conexao');  //dados da conexão não vão para o github
+    console.log(sourceFile.connectionString);
 
-// Endpoints de envio de mensagens
-// CRUD -> Create, Read (Read All e Read Single), Update and Delete
-// CRUD -> Criar, Ler (Ler tudo e ler individualmente), atualizar e remover
+    const client = await mongodb.MongoClient.connect(sourceFile.connectionString, {
+        useUnifiedTopology: true,
+    });
 
-const mensagens = [];
+    console.info("Banco de dados conectado!");
 
-// Read All
-app.get('/mensagens', (req, res) => {
-    res.json(mensagens.filter(Boolean));
-});
+    const app = express();
+    const port = process.env.PORT || 3000;
 
-// Create
-app.post('/mensagens', (req, res) => {
-});
+    const jsonParser = bodyParser.json();
+    app.use(jsonParser);
 
-// Read Single
-app.get('/mensagens/:id', (req, res) => {
-});
+    app.get('/', (req, res) => {
+        res.send('Hello world com MongoDB!');
+    });
 
-// Update
-app.put('/mensagens/:id', (req, res) => {
-});
+    // Endpoints de envio de mensagens
+    // CRUD -> Create, Read (Read All e Read Single), Update and Delete
+    // CRUD -> Criar, Ler (Ler tudo e ler individualmente), atualizar e remover
 
-// Delete
-app.delete('/mensagens/:id', (req, res) => {
-});
+    const mensagens = [];
 
-app.listen(port, () => {
-    console.log(`App rodando em http://localhost:${port}`);
-});
+    // Read All
+    app.get('/mensagens', (req, res) => {
+        res.json(mensagens.filter(Boolean));
+    });
+
+    // Create
+    app.post('/mensagens', (req, res) => {});
+
+    // Read Single
+    app.get('/mensagens/:id', (req, res) => {});
+
+    // Update
+    app.put('/mensagens/:id', (req, res) => {});
+
+    // Delete
+    app.delete('/mensagens/:id', (req, res) => {});
+
+    app.listen(port, () => {
+        console.log(`App rodando em http://localhost:${port}`);
+    });
+
+    //é o final da chamada do bloco assíncrono
+})();
